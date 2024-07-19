@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Function to check if a number is even or odd
+check_even_odd() {
+    local num=$1
+    if [ $((num % 2)) -eq 0 ]; then
+        echo "The number $num is even."
+    else
+        echo "The number $num is odd."
+    fi
+}
+
+# Main script
+echo "Enter a number:"
+read number
+
+# Check if the input is a valid number
+if ! [[ "$number" =~ ^[0-9]+$ ]]; then
+    echo "Invalid input. Please enter a valid number."
+    exit 1
+fi
+
+# Call the function to check if the number is even or odd
+check_even_odd $number
+==============================================
+chmod +x check_even_odd.sh
+./check_even_odd.sh
