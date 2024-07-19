@@ -148,3 +148,116 @@ Unix commands are the basic utilities and tools used to interact with the Unix o
     - `command &`: Execute `command` in the background.
 
 These commands form the foundation of working in a Unix environment. By combining them in various ways, you can perform complex tasks efficiently.
+
+Creating a Unix shell script is a common way to write a Unix program. Shell scripts are sequences of commands written in a file, which can be executed to perform various tasks. Here is an example of a simple Unix shell script that performs basic file operations and system information retrieval.
+
+### Example Shell Script: System Info and File Backup
+
+This script will:
+1. Display system information.
+2. Check for the existence of a directory and create it if it does not exist.
+3. Back up a specified file to that directory.
+4. Log the operations performed.
+
+#### Step 1: Create the Shell Script File
+
+Open your favorite text editor and create a new file named `backup_script.sh`.
+
+#### Step 2: Write the Shell Script
+
+```sh
+#!/bin/bash
+
+# Script to display system information and backup a file
+
+# Function to display system information
+function display_sys_info() {
+    echo "System Information:"
+    echo "--------------------"
+    echo "Hostname: $(hostname)"
+    echo "Date and Time: $(date)"
+    echo "Uptime: $(uptime -p)"
+    echo "Logged-in Users: $(who)"
+    echo "Free Memory: $(free -h)"
+    echo "Disk Usage: $(df -h)"
+    echo ""
+}
+
+# Function to back up a file
+function backup_file() {
+    local FILE=$1
+    local BACKUP_DIR=$2
+
+    if [ ! -f "$FILE" ]; then
+        echo "Error: File '$FILE' not found."
+        return 1
+    fi
+
+    if [ ! -d "$BACKUP_DIR" ]; then
+        echo "Backup directory '$BACKUP_DIR' does not exist. Creating it..."
+        mkdir -p "$BACKUP_DIR"
+    fi
+
+    cp "$FILE" "$BACKUP_DIR"
+    echo "File '$FILE' backed up to '$BACKUP_DIR'."
+}
+
+# Function to log operations
+function log_operations() {
+    local LOG_FILE=$1
+    shift
+    local MESSAGE=$@
+
+    echo "$(date): $MESSAGE" >> "$LOG_FILE"
+}
+
+# Main script
+LOG_FILE="backup_script.log"
+BACKUP_DIR="backup"
+
+# Display system information
+display_sys_info | tee -a "$LOG_FILE"
+
+# File to back up (passed as an argument to the script)
+FILE_TO_BACKUP=$1
+
+if [ -z "$FILE_TO_BACKUP" ]; then
+    echo "Usage: $0 <file_to_backup>"
+    exit 1
+fi
+
+# Back up the file and log the operation
+backup_file "$FILE_TO_BACKUP" "$BACKUP_DIR"
+if [ $? -eq 0 ]; then
+    log_operations "$LOG_FILE" "File '$FILE_TO_BACKUP' backed up successfully."
+else
+    log_operations "$LOG_FILE" "Failed to back up file '$FILE_TO_BACKUP'."
+fi
+```
+
+#### Step 3: Make the Script Executable
+
+Save the file and exit the text editor. Then, make the script executable using the `chmod` command:
+
+```sh
+chmod +x backup_script.sh
+```
+
+#### Step 4: Run the Script
+
+Execute the script by providing the file you want to back up as an argument:
+
+```sh
+./backup_script.sh example.txt
+```
+
+### Explanation of the Script
+
+- **Shebang (`#!/bin/bash`)**: Specifies the script should be run with the Bash shell.
+- **Functions (`display_sys_info`, `backup_file`, `log_operations`)**: Define reusable blocks of code for displaying system information, backing up a file, and logging operations.
+- **`display_sys_info`**: Gathers and displays system information.
+- **`backup_file`**: Checks if the file exists and if the backup directory exists (creates it if not), then copies the file to the backup directory.
+- **`log_operations`**: Appends messages to a log file with a timestamp.
+- **Main script logic**: Displays system information, checks for the presence of the file to back up, performs the backup, and logs the outcome.
+
+This script demonstrates basic file operations, condition checking, function definitions, and logging in Unix shell scripting.
