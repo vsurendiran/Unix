@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Database connection details
+DB_USER="your_username"
+DB_PASS="your_password"
+DB_NAME="your_database"
+
+# Log file
+LOG_FILE="procedure_execution.log"
+
+# SQL*Plus command to execute the procedure and capture the output
+sqlplus -s <<EOF > $LOG_FILE
+$DB_USER/$DB_PASS@$DB_NAME
+
+SET SERVEROUTPUT ON
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+EXEC my_procedure;
+EXIT;
+EOF
+
+# Check for errors
+if [ $? -ne 0 ]; then
+    echo "Error executing the procedure. Check the log file for details: $LOG_FILE"
+    exit 1
+else
+    echo "Procedure executed successfully. Check the log file for details: $LOG_FILE"
+    exit 0
+fi
